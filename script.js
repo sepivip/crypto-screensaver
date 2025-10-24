@@ -324,7 +324,9 @@ function updatePriceDisplay(data) {
             if (!priceText) {
                 priceText = document.createElement('span');
                 priceText.className = 'price-text';
-                priceElement.insertBefore(priceText, priceElement.firstChild);
+                // Clear existing text content (like "---" from HTML)
+                priceElement.textContent = '';
+                priceElement.appendChild(priceText);
             }
             priceText.textContent = price.toLocaleString('en-US', {
                 minimumFractionDigits: decimals,
