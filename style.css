@@ -389,13 +389,6 @@ body.price-flash-red {
     filter: drop-shadow(0 0 4px currentColor);
 }
 
-/* Ensure content is above chart */
-.tile-header,
-.tile-body {
-    position: relative;
-    z-index: 1;
-}
-
 /* ========================================
    Crowned Tile - Best Performer Animation
    ======================================== */
@@ -445,6 +438,8 @@ body.price-flash-red {
     flex-direction: column;
     gap: var(--space-xs);
     margin-bottom: var(--space-sm);
+    position: relative;
+    z-index: 1;
 }
 
 .crypto-symbol {
@@ -488,6 +483,8 @@ body.price-flash-red {
     justify-content: center;
     gap: var(--space-sm);
     min-height: 0; /* Allow shrinking */
+    position: relative;
+    z-index: 1;
 }
 
 /* Price Display */
