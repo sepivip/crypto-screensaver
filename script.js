@@ -100,6 +100,125 @@ let initialPrices = {}; // Store first load prices
 let performanceMetrics = {}; // Track % change since load
 let currentCrownHolder = null; // Track which crypto has the crown
 
+// Chart data storage - 24h historical prices
+let chartData = {
+    btc: [],
+    eth: [],
+    sol: [],
+    doge: [],
+    bnb: []
+};
+
+// Crypto color map for charts
+const CRYPTO_COLORS = {
+    btc: '#f7931a',
+    eth: '#627eea',
+    sol: '#14f195',
+    doge: '#c2a633',
+    bnb: '#f3ba2f'
+};
+
+// ========================================
+// Historical Data & Chart Functions
+// ========================================
+
+async function fetchHistoricalData() {
+    console.log('📊 Fetching 24h historical data for charts...');
+
+    // Fetch klines data for all cryptos in parallel
+    const promises = Object.keys(TOKENS).map(async (symbol) => {
+        const tokenId = TOKENS[symbol].id;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=24`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${symbol} klines`);
+            }
+
+            const data = await response.json();
+            // Extract close prices (index 4) from each kline
+            chartData[tokenId] = data.map(kline => parseFloat(kline[4]));
+            console.log(`✅ ${tokenId.toUpperCase()}: ${chartData[tokenId].length} data points`);
+
+            // Draw initial chart
+            drawChart(tokenId);
+        } catch (error) {
+            console.error(`❌ Error fetching ${symbol} klines:`, error);
+            // Initialize with empty array on error
+            chartData[tokenId] = [];
+        }
+    });
+
+    await Promise.all(promises);
+    console.log('📊 Historical data loaded successfully');
+}
+
+function drawChart(tokenId) {
+    const canvas = document.getElementById(`${tokenId}-chart`);
+    if (!canvas) {
+        console.warn(`Canvas not found for ${tokenId}`);
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const data = chartData[tokenId];
+
+    if (!data || data.length === 0) {
+        return; // No data to draw
+    }
+
+    // Set canvas size to match container (with device pixel ratio for sharpness)
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const width = rect.width;
+    const height = rect.height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Calculate min/max for scaling
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min;
+
+    // Prevent division by zero for flat lines
+    const scale = range > 0 ? range : 1;
+
+    // Draw sparkline
+    ctx.beginPath();
+    ctx.strokeStyle = CRYPTO_COLORS[tokenId];
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Add subtle glow
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = CRYPTO_COLORS[tokenId];
+
+    // Calculate points
+    const padding = 10; // Padding from edges
+    const xStep = (width - padding * 2) / (data.length - 1);
+
+    data.forEach((price, index) => {
+        const x = padding + index * xStep;
+        // Invert Y axis (higher price = higher on screen)
+        const y = height - padding - ((price - min) / scale) * (height - padding * 2);
+
+        if (index === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+
+    ctx.stroke();
+}
+
 async function fetchCryptoPrices() {
     try {
         // Build symbols array for Binance API
@@ -214,6 +333,13 @@ function updatePriceDisplay(data) {
             // Track BTC price for flash comparison
             if (tokenId === 'btc') {
                 currentBtcPrice = price;
+            }
+
+            // Update chart data (shift old data, add new price)
+            if (!isFirstLoad && chartData[tokenId] && chartData[tokenId].length > 0) {
+                chartData[tokenId].shift(); // Remove oldest
+                chartData[tokenId].push(price); // Add newest
+                drawChart(tokenId); // Redraw chart with updated data
             }
         }
     });
@@ -459,8 +585,9 @@ Object.keys(TOKENS).forEach(tokenKey => {
     }
 });
 
-// Initial load (will schedule next fetch automatically)
-fetchCryptoPrices();
+// Initial load - fetch historical data for charts and current prices
+fetchHistoricalData(); // Load 24h chart data
+fetchCryptoPrices();    // Load current prices (will schedule next fetch automatically)
 
 // ========================================
 // Fullscreen Functionality

@@ -374,6 +374,29 @@ body.price-flash-red {
 }
 
 /* ========================================
+   Chart Background - Sparkline
+   ======================================== */
+
+.chart-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* Ensure content is above chart */
+.tile-header,
+.tile-body {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
    Crowned Tile - Best Performer Animation
    ======================================== */
 
