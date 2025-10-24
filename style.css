@@ -5,13 +5,13 @@
 
 /* CSS Variables - Design System */
 :root {
-    /* Background Layers */
+    /* Background Layers - AMOLED Optimized (Pure Black) */
     --bg-void: #000000;
-    --bg-space: #0d1117;
-    --bg-space-dark: #0a0d13;
-    --bg-surface: #161b22;
-    --bg-elevated: #21262d;
-    --bg-accent: #30363d;
+    --bg-space: #000000;
+    --bg-space-dark: #000000;
+    --bg-surface: #000000;
+    --bg-elevated: #000000;
+    --bg-accent: #000000;
 
     /* Text Hierarchy */
     --text-primary: #f0f6fc;
@@ -166,8 +166,8 @@ body.price-flash-red {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: var(--space-md);
-    gap: var(--space-md);
+    padding: var(--space-sm);
+    gap: var(--space-sm);
 }
 
 /* ========================================
@@ -178,12 +178,12 @@ body.price-flash-red {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-sm) var(--space-md);
-    background: rgba(22, 27, 34, 0.6);
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     flex-shrink: 0; /* Don't shrink header */
 }
 
@@ -232,7 +232,7 @@ body.price-flash-red {
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-xs) var(--space-sm);
-    background: rgba(48, 54, 61, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
     transition: all 0.3s ease;
@@ -313,11 +313,11 @@ body.price-flash-red {
 .crypto-tile {
     display: flex;
     flex-direction: column;
-    background: rgba(22, 27, 34, 0.6);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 4px;
-    padding: var(--space-md);
+    padding: var(--space-sm);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -379,7 +379,7 @@ body.price-flash-red {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-sm);
 }
 
 .crypto-symbol {
@@ -472,8 +472,8 @@ body.price-flash-red {
 .terminal-footer {
     display: flex;
     flex-direction: column;
-    padding: var(--space-sm) var(--space-md);
-    background: rgba(22, 27, 34, 0.6);
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
@@ -517,7 +517,7 @@ body.price-flash-red {
     align-items: center;
     justify-content: center;
     gap: var(--space-xs);
-    padding: var(--space-md);
+    padding: var(--space-sm);
     background: var(--accent-primary);
     color: var(--accent-inverse);
     border: none;
