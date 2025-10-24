@@ -216,7 +216,13 @@ function updatePriceDisplay(data) {
     });
 
     // Update crown position based on performance
-    if (!isFirstLoad) {
+    // On first load, use 24h change to pick initial winner
+    // After that, use performance since page load
+    if (isFirstLoad) {
+        // First load - award crown based on 24h change
+        updateCrownDisplayInitial(data);
+    } else {
+        // Subsequent updates - use performance since load
         updateCrownDisplay();
     }
 
@@ -298,6 +304,45 @@ function calculateBestPerformer() {
     });
 
     return bestPerformer;
+}
+
+function updateCrownDisplayInitial(data) {
+    // On first load, pick winner based on 24h change
+    let bestPerformer = null;
+    let bestChange = -Infinity;
+
+    Object.keys(TOKENS).forEach(tokenKey => {
+        const tokenData = data[tokenKey];
+        if (!tokenData) return;
+
+        const tokenId = TOKENS[tokenKey].id;
+        const change24h = tokenData.usd_24h_change || 0;
+
+        if (change24h > bestChange) {
+            bestChange = change24h;
+            bestPerformer = tokenId;
+        }
+    });
+
+    if (bestPerformer) {
+        const priceElement = document.getElementById(`${bestPerformer}-price`);
+        const tile = document.querySelector(`.crypto-tile[data-crypto="${bestPerformer}"]`);
+
+        if (priceElement) {
+            // Add crown emoji after price
+            const crownSpan = document.createElement('span');
+            crownSpan.className = 'crown-emoji visible';
+            crownSpan.textContent = ' 👑';
+            priceElement.appendChild(crownSpan);
+        }
+
+        if (tile) {
+            tile.classList.add('crowned');
+        }
+
+        currentCrownHolder = bestPerformer;
+        console.log(`👑 Initial crown awarded to ${bestPerformer.toUpperCase()} (24h change: ${bestChange >= 0 ? '+' : ''}${bestChange.toFixed(2)}%)`);
+    }
 }
 
 function updateCrownDisplay() {
