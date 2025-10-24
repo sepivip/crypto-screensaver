@@ -225,10 +225,10 @@ body {
     overflow: hidden; /* NO SCROLLING - FIT IN VIEWPORT */
 
     /* Portrait Mobile: Market cap-based layout */
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr;
     grid-template-rows: 1.2fr 1fr;
     grid-template-areas:
-        "btc eth"
+        "btc btc eth"
         "sol doge bnb";
 }
 
