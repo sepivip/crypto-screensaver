@@ -349,10 +349,13 @@ function updateFullscreenStatus() {
                      document.msFullscreenElement);
 
     const btn = document.getElementById('toggleFullscreenBtn');
+    if (!btn) return;
+
     const btnText = btn.querySelector('.btn-text');
+    if (!btnText) return;
 
     if (isFullscreen) {
-        btnText.textContent = 'EXIT FULLSCREEN';
+        btnText.textContent = 'EXIT';
         btn.classList.add('active');
         console.log('📺 Fullscreen: ON');
     } else {
@@ -363,4 +366,10 @@ function updateFullscreenStatus() {
 }
 
 // Bind fullscreen button
-document.getElementById('toggleFullscreenBtn').addEventListener('click', toggleFullscreen);
+const fullscreenBtn = document.getElementById('toggleFullscreenBtn');
+if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    console.log('✅ Fullscreen button bound successfully');
+} else {
+    console.error('❌ Fullscreen button not found!');
+}

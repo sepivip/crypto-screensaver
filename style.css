@@ -146,8 +146,7 @@ body.price-flash-red {
     background-size: 50px 50px;
     background-position: -1px -1px;
     opacity: 0.3;
-    animation: gridScroll 20s linear infinite;
-    transition: opacity 3s ease;
+    /* Removed animation - was causing "pulsing" effect */
 }
 
 @keyframes gridScroll {
@@ -471,22 +470,21 @@ body.price-flash-red {
 
 .terminal-footer {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     padding: var(--space-sm) var(--space-md);
     background: rgba(22, 27, 34, 0.6);
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     flex-shrink: 0; /* Don't shrink footer */
 }
 
 .footer-left {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .footer-time {
@@ -506,25 +504,27 @@ body.price-flash-red {
 }
 
 .footer-controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-sm);
-    flex-wrap: wrap;
+    width: 100%;
 }
 
 /* Control Button */
 .control-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-xs);
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-md);
     background: var(--accent-primary);
     color: var(--accent-inverse);
     border: none;
     border-radius: 2px;
     font-family: var(--font-mono);
-    font-size: 0.5rem;
+    font-size: 0.625rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
