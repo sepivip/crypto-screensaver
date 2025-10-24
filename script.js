@@ -76,15 +76,15 @@ document.addEventListener('visibilitychange', async () => {
 });
 
 // Crypto price functionality
-const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price';
+const BINANCE_API = 'https://api.binance.com/api/v3/ticker/24hr';
 
 // Token configuration
 const TOKENS = {
-    bitcoin: { id: 'btc', name: 'BITCOIN' },
-    ethereum: { id: 'eth', name: 'ETHEREUM' },
-    solana: { id: 'sol', name: 'SOLANA' },
-    dogecoin: { id: 'doge', name: 'DOGECOIN' },
-    binancecoin: { id: 'bnb', name: 'BINANCE COIN' }
+    BTCUSDT: { id: 'btc', name: 'BITCOIN' },
+    ETHUSDT: { id: 'eth', name: 'ETHEREUM' },
+    SOLUSDT: { id: 'sol', name: 'SOLANA' },
+    DOGEUSDT: { id: 'doge', name: 'DOGECOIN' },
+    BNBUSDT: { id: 'bnb', name: 'BINANCE COIN' }
 };
 
 // Track previous BTC price for flash comparison
@@ -102,8 +102,10 @@ let currentCrownHolder = null; // Track which crypto has the crown
 
 async function fetchCryptoPrices() {
     try {
-        const tokenIds = Object.keys(TOKENS).join(',');
-        const url = `${COINGECKO_API}?ids=${tokenIds}&vs_currencies=usd&include_24hr_change=true`;
+        // Build symbols array for Binance API
+        const symbols = Object.keys(TOKENS);
+        const symbolsParam = JSON.stringify(symbols);
+        const url = `${BINANCE_API}?symbols=${encodeURIComponent(symbolsParam)}`;
 
         console.log('Fetching crypto prices from:', url);
 
@@ -171,18 +173,19 @@ function updatePriceDisplay(data) {
     let currentBtcPrice = null;
     const isFirstLoad = Object.keys(initialPrices).length === 0;
 
-    // Update all tokens dynamically
-    Object.keys(TOKENS).forEach(tokenKey => {
-        const tokenData = data[tokenKey];
-        if (!tokenData) return;
+    // Update all tokens dynamically - data is now an array from Binance
+    data.forEach(ticker => {
+        const symbol = ticker.symbol; // e.g., "BTCUSDT"
+        const tokenConfig = TOKENS[symbol];
+        if (!tokenConfig) return;
 
-        const tokenId = TOKENS[tokenKey].id;
+        const tokenId = tokenConfig.id;
         const priceElement = document.getElementById(`${tokenId}-price`);
         const changeElement = document.getElementById(`${tokenId}-change`);
 
         if (priceElement && changeElement) {
-            // Format price based on value
-            const price = tokenData.usd;
+            // Format price based on value - Binance returns strings, parse to number
+            const price = parseFloat(ticker.lastPrice);
             const decimals = price < 1 ? 4 : price < 100 ? 3 : 2;
 
             // Store initial price on first load
@@ -203,8 +206,8 @@ function updatePriceDisplay(data) {
             });
             priceElement.classList.remove('loading');
 
-            // Update 24h change
-            const changeValue = tokenData.usd_24h_change;
+            // Update 24h change - Binance returns priceChangePercent as string
+            const changeValue = parseFloat(ticker.priceChangePercent);
             changeElement.textContent = `${changeValue >= 0 ? '+' : ''}${changeValue.toFixed(2)}%`;
             changeElement.className = 'metric-value ' + (changeValue >= 0 ? 'positive' : 'negative');
 
@@ -311,12 +314,14 @@ function updateCrownDisplayInitial(data) {
     let bestPerformer = null;
     let bestChange = -Infinity;
 
-    Object.keys(TOKENS).forEach(tokenKey => {
-        const tokenData = data[tokenKey];
-        if (!tokenData) return;
+    // Data is now an array from Binance
+    data.forEach(ticker => {
+        const symbol = ticker.symbol;
+        const tokenConfig = TOKENS[symbol];
+        if (!tokenConfig) return;
 
-        const tokenId = TOKENS[tokenKey].id;
-        const change24h = tokenData.usd_24h_change || 0;
+        const tokenId = tokenConfig.id;
+        const change24h = parseFloat(ticker.priceChangePercent) || 0;
 
         if (change24h > bestChange) {
             bestChange = change24h;
