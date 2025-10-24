@@ -77,44 +77,56 @@ body {
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 3s ease;
 }
 
 /* ========================================
-   Market Mood Ambient Pulse - Based on BTC
+   Lightning Flash - Price Update Reaction
    ======================================== */
 
-/* Bullish (BTC Green) - Subtle green glow pulse */
-body.market-bullish {
-    animation: bullishPulse 8s ease-in-out infinite;
+/* Green Lightning - Price went UP */
+body.price-flash-green {
+    animation: lightningGreen 1s ease-out;
 }
 
-@keyframes bullishPulse {
-    0%, 100% {
+@keyframes lightningGreen {
+    0% {
         background-color: var(--bg-void);
     }
-    50% {
-        background-color: rgba(35, 134, 54, 0.03); /* Very subtle green */
+    10% {
+        background-color: rgba(35, 134, 54, 0.15); /* Bright green flash */
     }
-}
-
-/* Bearish (BTC Red) - Subtle red glow pulse */
-body.market-bearish {
-    animation: bearishPulse 8s ease-in-out infinite;
-}
-
-@keyframes bearishPulse {
-    0%, 100% {
+    20% {
         background-color: var(--bg-void);
     }
-    50% {
-        background-color: rgba(218, 54, 51, 0.03); /* Very subtle red */
+    30% {
+        background-color: rgba(35, 134, 54, 0.08); /* Dimmer flash */
+    }
+    100% {
+        background-color: var(--bg-void);
     }
 }
 
-/* Neutral (BTC Flat) - No pulse, just base color */
-body.market-neutral {
-    background-color: var(--bg-void);
+/* Red Lightning - Price went DOWN */
+body.price-flash-red {
+    animation: lightningRed 1s ease-out;
+}
+
+@keyframes lightningRed {
+    0% {
+        background-color: var(--bg-void);
+    }
+    10% {
+        background-color: rgba(218, 54, 51, 0.15); /* Bright red flash */
+    }
+    20% {
+        background-color: var(--bg-void);
+    }
+    30% {
+        background-color: rgba(218, 54, 51, 0.08); /* Dimmer flash */
+    }
+    100% {
+        background-color: var(--bg-void);
+    }
 }
 
 /* ========================================
@@ -141,15 +153,6 @@ body.market-neutral {
 @keyframes gridScroll {
     0% { background-position: -1px -1px; }
     100% { background-position: 49px 49px; }
-}
-
-/* Grid responds to market mood */
-body.market-bullish .grid-background {
-    opacity: 0.4; /* Slightly more visible when bullish */
-}
-
-body.market-bearish .grid-background {
-    opacity: 0.25; /* Slightly dimmer when bearish */
 }
 
 /* ========================================
@@ -502,24 +505,31 @@ body.market-bearish .grid-background {
     letter-spacing: 0.05em;
 }
 
+.footer-controls {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
 /* Control Button */
 .control-btn {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-lg);
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
     background: var(--accent-primary);
     color: var(--accent-inverse);
     border: none;
     border-radius: 2px;
     font-family: var(--font-mono);
-    font-size: 0.625rem;
+    font-size: 0.5rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .control-btn::before {

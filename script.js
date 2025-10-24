@@ -87,6 +87,14 @@ const TOKENS = {
     binancecoin: { id: 'bnb', name: 'BINANCE COIN' }
 };
 
+// Track previous BTC price for flash comparison
+let previousBtcPrice = null;
+
+// API retry logic
+let apiErrorCount = 0;
+let refreshInterval = 60000; // Start at 60 seconds
+let refreshTimer = null;
+
 async function fetchCryptoPrices() {
     try {
         const tokenIds = Object.keys(TOKENS).join(',');
@@ -105,8 +113,13 @@ async function fetchCryptoPrices() {
         const data = await response.json();
         console.log('Received crypto data:', data);
 
+        // Success! Reset error count and interval
+        apiErrorCount = 0;
+        refreshInterval = 60000; // Back to 60s
+
         updatePriceDisplay(data);
         updateLastUpdateTime();
+        scheduleNextFetch();
     } catch (error) {
         console.error('Error fetching crypto prices:', error);
         console.error('Error details:', {
@@ -114,12 +127,43 @@ async function fetchCryptoPrices() {
             message: error.message,
             stack: error.stack
         });
-        showError(error.message);
+
+        // Handle API errors with exponential backoff
+        handleApiError(error.message);
     }
 }
 
+function handleApiError(errorMessage) {
+    apiErrorCount++;
+
+    // Exponential backoff: 60s, 120s, 300s (5min)
+    if (apiErrorCount === 1) {
+        refreshInterval = 60000; // 60s
+    } else if (apiErrorCount === 2) {
+        refreshInterval = 120000; // 2min
+    } else {
+        refreshInterval = 300000; // 5min
+    }
+
+    console.warn(`⚠️ API Error #${apiErrorCount}. Next retry in ${refreshInterval/1000}s`);
+
+    showError(errorMessage);
+    scheduleNextFetch();
+}
+
+function scheduleNextFetch() {
+    // Clear existing timer
+    if (refreshTimer) {
+        clearTimeout(refreshTimer);
+    }
+
+    // Schedule next fetch
+    refreshTimer = setTimeout(fetchCryptoPrices, refreshInterval);
+    console.log(`⏰ Next fetch scheduled in ${refreshInterval/1000}s`);
+}
+
 function updatePriceDisplay(data) {
-    let btcChangeValue = null;
+    let currentBtcPrice = null;
 
     // Update all tokens dynamically
     Object.keys(TOKENS).forEach(tokenKey => {
@@ -146,39 +190,71 @@ function updatePriceDisplay(data) {
             changeElement.textContent = `${changeValue >= 0 ? '+' : ''}${changeValue.toFixed(2)}%`;
             changeElement.className = 'metric-value ' + (changeValue >= 0 ? 'positive' : 'negative');
 
-            // Track BTC change for background pulse
+            // Track BTC price for flash comparison
             if (tokenId === 'btc') {
-                btcChangeValue = changeValue;
+                currentBtcPrice = price;
             }
         }
     });
 
-    // Apply ambient background pulse based on BTC performance
-    applyMarketMoodPulse(btcChangeValue);
+    // Trigger lightning flash based on price movement
+    triggerPriceFlash(currentBtcPrice);
 }
 
-// Apply subtle background pulse based on BTC market direction
-function applyMarketMoodPulse(btcChange) {
+// Trigger lightning flash when BTC price changes
+function triggerPriceFlash(currentPrice) {
+    if (currentPrice === null || currentPrice === undefined) {
+        return; // No price data
+    }
+
+    // First load - just store the price, no flash
+    if (previousBtcPrice === null) {
+        previousBtcPrice = currentPrice;
+        console.log('💰 Initial BTC price:', currentPrice);
+        return;
+    }
+
+    // Compare prices
+    const priceDiff = currentPrice - previousBtcPrice;
+
+    if (priceDiff > 0) {
+        // Price went UP - GREEN LIGHTNING
+        flashBackground('green');
+        console.log('⚡ GREEN FLASH: BTC +$' + priceDiff.toFixed(2) + ' (was $' + previousBtcPrice.toFixed(2) + ', now $' + currentPrice.toFixed(2) + ')');
+    } else if (priceDiff < 0) {
+        // Price went DOWN - RED LIGHTNING
+        flashBackground('red');
+        console.log('⚡ RED FLASH: BTC -$' + Math.abs(priceDiff).toFixed(2) + ' (was $' + previousBtcPrice.toFixed(2) + ', now $' + currentPrice.toFixed(2) + ')');
+    } else {
+        // Price unchanged (rare)
+        console.log('➡️ No change: BTC still $' + currentPrice.toFixed(2));
+    }
+
+    // Update previous price
+    previousBtcPrice = currentPrice;
+}
+
+// Quick lightning flash effect
+function flashBackground(color) {
     const body = document.body;
 
-    // Remove any existing mood classes
-    body.classList.remove('market-bullish', 'market-bearish', 'market-neutral');
+    // Remove any existing flash
+    body.classList.remove('price-flash-green', 'price-flash-red');
 
-    if (btcChange === null || btcChange === undefined) {
-        return; // No data yet
-    }
+    // Trigger reflow to restart animation
+    void body.offsetWidth;
 
-    // Determine market mood
-    if (btcChange > 0) {
-        body.classList.add('market-bullish'); // Green pulse
-        console.log('📈 Market mood: BULLISH (BTC +' + btcChange.toFixed(2) + '%)');
-    } else if (btcChange < 0) {
-        body.classList.add('market-bearish'); // Red pulse
-        console.log('📉 Market mood: BEARISH (BTC ' + btcChange.toFixed(2) + '%)');
+    // Add flash class
+    if (color === 'green') {
+        body.classList.add('price-flash-green');
     } else {
-        body.classList.add('market-neutral'); // Neutral (rare)
-        console.log('➡️ Market mood: NEUTRAL (BTC 0%)');
+        body.classList.add('price-flash-red');
     }
+
+    // Remove after animation (1 second)
+    setTimeout(() => {
+        body.classList.remove('price-flash-green', 'price-flash-red');
+    }, 1000);
 }
 
 function updateLastUpdateTime() {
@@ -221,12 +297,6 @@ function showError(errorMessage) {
     }
 }
 
-// Initial load
-fetchCryptoPrices();
-
-// Auto-refresh every 30 seconds
-setInterval(fetchCryptoPrices, 30000);
-
 // Add loading animation initially
 Object.keys(TOKENS).forEach(tokenKey => {
     const tokenId = TOKENS[tokenKey].id;
@@ -235,3 +305,62 @@ Object.keys(TOKENS).forEach(tokenKey => {
         priceElement.classList.add('loading');
     }
 });
+
+// Initial load (will schedule next fetch automatically)
+fetchCryptoPrices();
+
+// ========================================
+// Fullscreen Functionality
+// ========================================
+
+let isFullscreen = false;
+
+function toggleFullscreen() {
+    if (!isFullscreen) {
+        // Enter fullscreen
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
+    }
+}
+
+// Listen for fullscreen changes
+document.addEventListener('fullscreenchange', updateFullscreenStatus);
+document.addEventListener('webkitfullscreenchange', updateFullscreenStatus);
+document.addEventListener('msfullscreenchange', updateFullscreenStatus);
+
+function updateFullscreenStatus() {
+    isFullscreen = !!(document.fullscreenElement ||
+                     document.webkitFullscreenElement ||
+                     document.msFullscreenElement);
+
+    const btn = document.getElementById('toggleFullscreenBtn');
+    const btnText = btn.querySelector('.btn-text');
+
+    if (isFullscreen) {
+        btnText.textContent = 'EXIT FULLSCREEN';
+        btn.classList.add('active');
+        console.log('📺 Fullscreen: ON');
+    } else {
+        btnText.textContent = 'FULLSCREEN';
+        btn.classList.remove('active');
+        console.log('📺 Fullscreen: OFF');
+    }
+}
+
+// Bind fullscreen button
+document.getElementById('toggleFullscreenBtn').addEventListener('click', toggleFullscreen);
