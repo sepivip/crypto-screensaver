@@ -364,11 +364,12 @@ function updateCrownDisplay() {
         const oldTile = document.querySelector(`.crypto-tile[data-crypto="${currentCrownHolder}"]`);
 
         if (oldPriceElement) {
-            // Remove crown emoji
+            // Remove crown emoji with leaving animation
             const crownSpan = oldPriceElement.querySelector('.crown-emoji');
             if (crownSpan) {
-                crownSpan.classList.add('fade-out');
-                setTimeout(() => crownSpan.remove(), 300);
+                crownSpan.classList.remove('visible');
+                crownSpan.classList.add('leaving');
+                setTimeout(() => crownSpan.remove(), 400);
             }
         }
 
@@ -385,14 +386,17 @@ function updateCrownDisplay() {
         const newTile = document.querySelector(`.crypto-tile[data-crypto="${winner}"]`);
 
         if (newPriceElement) {
-            // Add crown emoji after price
+            // Add crown emoji after price with arriving animation
             const crownSpan = document.createElement('span');
-            crownSpan.className = 'crown-emoji';
+            crownSpan.className = 'crown-emoji arriving';
             crownSpan.textContent = ' 👑';
             newPriceElement.appendChild(crownSpan);
 
-            // Trigger fade-in
-            setTimeout(() => crownSpan.classList.add('visible'), 10);
+            // After arriving animation completes, mark as visible
+            setTimeout(() => {
+                crownSpan.classList.remove('arriving');
+                crownSpan.classList.add('visible');
+            }, 500);
         }
 
         if (newTile) {
