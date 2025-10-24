@@ -95,6 +95,11 @@ let apiErrorCount = 0;
 let refreshInterval = 60000; // Start at 60 seconds
 let refreshTimer = null;
 
+// Crown gamification - track performance since page load
+let initialPrices = {}; // Store first load prices
+let performanceMetrics = {}; // Track % change since load
+let currentCrownHolder = null; // Track which crypto has the crown
+
 async function fetchCryptoPrices() {
     try {
         const tokenIds = Object.keys(TOKENS).join(',');
@@ -164,6 +169,7 @@ function scheduleNextFetch() {
 
 function updatePriceDisplay(data) {
     let currentBtcPrice = null;
+    const isFirstLoad = Object.keys(initialPrices).length === 0;
 
     // Update all tokens dynamically
     Object.keys(TOKENS).forEach(tokenKey => {
@@ -178,6 +184,18 @@ function updatePriceDisplay(data) {
             // Format price based on value
             const price = tokenData.usd;
             const decimals = price < 1 ? 4 : price < 100 ? 3 : 2;
+
+            // Store initial price on first load
+            if (isFirstLoad) {
+                initialPrices[tokenId] = price;
+                performanceMetrics[tokenId] = 0; // No performance yet
+                console.log(`📊 Initial ${tokenId.toUpperCase()} price: $${price.toFixed(2)}`);
+            } else {
+                // Calculate performance since page load
+                const initialPrice = initialPrices[tokenId];
+                const performance = ((price - initialPrice) / initialPrice) * 100;
+                performanceMetrics[tokenId] = performance;
+            }
 
             priceElement.textContent = price.toLocaleString('en-US', {
                 minimumFractionDigits: decimals,
@@ -196,6 +214,11 @@ function updatePriceDisplay(data) {
             }
         }
     });
+
+    // Update crown position based on performance
+    if (!isFirstLoad) {
+        updateCrownDisplay();
+    }
 
     // Trigger lightning flash based on price movement
     triggerPriceFlash(currentBtcPrice);
@@ -255,6 +278,82 @@ function flashBackground(color) {
     setTimeout(() => {
         body.classList.remove('price-flash-green', 'price-flash-red');
     }, 600);
+}
+
+// ========================================
+// Crown Gamification - Best Performer
+// ========================================
+
+function calculateBestPerformer() {
+    // Find the crypto with highest performance since page load
+    let bestPerformer = null;
+    let bestPerformance = -Infinity;
+
+    Object.keys(performanceMetrics).forEach(tokenId => {
+        const performance = performanceMetrics[tokenId];
+        if (performance > bestPerformance) {
+            bestPerformance = performance;
+            bestPerformer = tokenId;
+        }
+    });
+
+    return bestPerformer;
+}
+
+function updateCrownDisplay() {
+    const winner = calculateBestPerformer();
+
+    // If winner hasn't changed, don't update
+    if (winner === currentCrownHolder) {
+        return;
+    }
+
+    // Remove crown from previous holder
+    if (currentCrownHolder) {
+        const oldPriceElement = document.getElementById(`${currentCrownHolder}-price`);
+        const oldTile = document.querySelector(`.crypto-tile[data-crypto="${currentCrownHolder}"]`);
+
+        if (oldPriceElement) {
+            // Remove crown emoji
+            const crownSpan = oldPriceElement.querySelector('.crown-emoji');
+            if (crownSpan) {
+                crownSpan.classList.add('fade-out');
+                setTimeout(() => crownSpan.remove(), 300);
+            }
+        }
+
+        if (oldTile) {
+            oldTile.classList.remove('crowned');
+        }
+
+        console.log(`👑 Crown removed from ${currentCrownHolder.toUpperCase()}`);
+    }
+
+    // Add crown to new winner
+    if (winner) {
+        const newPriceElement = document.getElementById(`${winner}-price`);
+        const newTile = document.querySelector(`.crypto-tile[data-crypto="${winner}"]`);
+
+        if (newPriceElement) {
+            // Add crown emoji after price
+            const crownSpan = document.createElement('span');
+            crownSpan.className = 'crown-emoji';
+            crownSpan.textContent = ' 👑';
+            newPriceElement.appendChild(crownSpan);
+
+            // Trigger fade-in
+            setTimeout(() => crownSpan.classList.add('visible'), 10);
+        }
+
+        if (newTile) {
+            newTile.classList.add('crowned');
+        }
+
+        const performance = performanceMetrics[winner];
+        console.log(`👑 Crown awarded to ${winner.toUpperCase()} (${performance >= 0 ? '+' : ''}${performance.toFixed(2)}% since load)`);
+
+        currentCrownHolder = winner;
+    }
 }
 
 function updateLastUpdateTime() {

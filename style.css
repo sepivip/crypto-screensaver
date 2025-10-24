@@ -373,6 +373,49 @@ body.price-flash-red {
     box-shadow: 0 8px 32px rgba(243, 186, 47, 0.3);
 }
 
+/* ========================================
+   Crowned Tile - Best Performer Animation
+   ======================================== */
+
+/* Crowned tiles get animated border glow in their accent color */
+.crypto-tile.crowned {
+    animation: crownGlow 2s ease-in-out infinite;
+}
+
+.crypto-tile.crowned[data-crypto="btc"] {
+    border-color: var(--crypto-btc);
+    box-shadow: 0 0 20px rgba(247, 147, 26, 0.5);
+}
+
+.crypto-tile.crowned[data-crypto="eth"] {
+    border-color: var(--crypto-eth);
+    box-shadow: 0 0 20px rgba(98, 126, 234, 0.5);
+}
+
+.crypto-tile.crowned[data-crypto="sol"] {
+    border-color: var(--crypto-sol);
+    box-shadow: 0 0 20px rgba(20, 241, 149, 0.5);
+}
+
+.crypto-tile.crowned[data-crypto="doge"] {
+    border-color: var(--crypto-doge);
+    box-shadow: 0 0 20px rgba(194, 166, 51, 0.5);
+}
+
+.crypto-tile.crowned[data-crypto="bnb"] {
+    border-color: var(--crypto-bnb);
+    box-shadow: 0 0 20px rgba(243, 186, 47, 0.5);
+}
+
+@keyframes crownGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+    }
+}
+
 /* Tile Header */
 .tile-header {
     display: flex;
@@ -437,11 +480,29 @@ body.price-flash-red {
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
+    position: relative;
 }
 
 /* Larger price for BTC (biggest tile) */
 .crypto-tile[data-crypto="btc"] .price-value {
     font-size: 1.5rem;
+}
+
+/* Crown Emoji - Best Performer */
+.crown-emoji {
+    display: inline-block;
+    font-size: 1rem;
+    margin-left: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.crown-emoji.visible {
+    opacity: 1;
+}
+
+.crown-emoji.fade-out {
+    opacity: 0;
 }
 
 /* Change Display */
