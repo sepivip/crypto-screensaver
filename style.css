@@ -179,7 +179,7 @@ body.price-flash-red {
     justify-content: space-between;
     align-items: center;
     padding: var(--space-sm);
-    background: rgba(0, 0, 0, 0.6);
+    background: #000000;
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
@@ -231,8 +231,8 @@ body.price-flash-red {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background: rgba(0, 0, 0, 0.5);
+    padding: var(--space-sm);
+    background: #000000;
     border: 1px solid var(--border-primary);
     border-radius: 2px;
     transition: all 0.3s ease;
@@ -313,12 +313,12 @@ body.price-flash-red {
 .crypto-tile {
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.6);
+    background: #000000;
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     padding: var(--space-sm);
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -348,7 +348,6 @@ body.price-flash-red {
 }
 
 .crypto-tile:hover {
-    transform: scale(1.02);
     border-color: var(--border-accent);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
@@ -473,7 +472,7 @@ body.price-flash-red {
     display: flex;
     flex-direction: column;
     padding: var(--space-sm);
-    background: rgba(0, 0, 0, 0.6);
+    background: #000000;
     backdrop-filter: blur(24px);
     border: 1px solid var(--border-primary);
     border-radius: 2px;
@@ -527,34 +526,18 @@ body.price-flash-red {
     font-weight: 700;
     letter-spacing: 0.05em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
     position: relative;
     overflow: hidden;
     white-space: nowrap;
 }
 
-.control-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.control-btn:hover::before {
-    left: 100%;
-}
-
 .control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(240, 246, 252, 0.3);
+    opacity: 0.9;
 }
 
 .control-btn:active {
-    transform: translateY(0);
+    opacity: 0.8;
 }
 
 .control-btn.active {
