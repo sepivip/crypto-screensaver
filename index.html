@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Crypto Dashboard</h1>
+            <div class="wake-lock-status">
+                <span id="wakeLockStatus">Screen Lock: Off</span>
+            </div>
+        </div>
+
+        <div class="crypto-grid">
+            <div class="crypto-card" id="btc-card">
+                <div class="crypto-symbol">BTC</div>
+                <div class="crypto-name">Bitcoin</div>
+                <div class="crypto-price" id="btc-price">Loading...</div>
+                <div class="crypto-change" id="btc-change">-</div>
+            </div>
+
+            <div class="crypto-card" id="eth-card">
+                <div class="crypto-symbol">ETH</div>
+                <div class="crypto-name">Ethereum</div>
+                <div class="crypto-price" id="eth-price">Loading...</div>
+                <div class="crypto-change" id="eth-change">-</div>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdate">-</span>
+        </div>
+
+        <button class="toggle-lock-btn" id="toggleLockBtn">Enable Screen Lock</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
