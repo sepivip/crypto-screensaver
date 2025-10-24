@@ -90,20 +90,31 @@ const TOKENS = {
 async function fetchCryptoPrices() {
     try {
         const tokenIds = Object.keys(TOKENS).join(',');
-        const response = await fetch(
-            `${COINGECKO_API}?ids=${tokenIds}&vs_currencies=usd&include_24hr_change=true`
-        );
+        const url = `${COINGECKO_API}?ids=${tokenIds}&vs_currencies=usd&include_24hr_change=true`;
+
+        console.log('Fetching crypto prices from:', url);
+
+        const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error('Failed to fetch prices');
+            const errorText = await response.text();
+            console.error('API Error Response:', response.status, errorText);
+            throw new Error(`API returned ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
+        console.log('Received crypto data:', data);
+
         updatePriceDisplay(data);
         updateLastUpdateTime();
     } catch (error) {
         console.error('Error fetching crypto prices:', error);
-        showError();
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        showError(error.message);
     }
 }
 
@@ -146,14 +157,34 @@ function updateLastUpdateTime() {
     document.getElementById('lastUpdate').textContent = timeString;
 }
 
-function showError() {
+function showError(errorMessage) {
+    console.warn('Displaying error state to user');
     Object.keys(TOKENS).forEach(tokenKey => {
         const tokenId = TOKENS[tokenKey].id;
         const priceElement = document.getElementById(`${tokenId}-price`);
+        const changeElement = document.getElementById(`${tokenId}-change`);
+
         if (priceElement) {
             priceElement.textContent = 'ERROR';
+            priceElement.classList.remove('loading');
+        }
+        if (changeElement) {
+            changeElement.textContent = '--';
+            changeElement.className = 'metric-value';
         }
     });
+
+    // Show error in footer
+    const lastUpdateElement = document.getElementById('lastUpdate');
+    if (lastUpdateElement) {
+        lastUpdateElement.textContent = 'API Error';
+        lastUpdateElement.style.color = 'var(--status-danger)';
+    }
+
+    // Log helpful debugging info
+    if (errorMessage && errorMessage.includes('CORS')) {
+        console.error('⚠️ CORS ERROR: You may be opening the HTML file directly (file://). Try hosting it on a server or use GitHub Pages.');
+    }
 }
 
 // Initial load
