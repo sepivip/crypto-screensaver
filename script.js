@@ -39,17 +39,22 @@ async function releaseWakeLock() {
 // Update UI to show wake lock status
 function updateWakeLockStatus(isActive) {
     const statusElement = document.getElementById('wakeLockStatus');
+    const lockIcon = document.getElementById('lockIcon');
+    const statusContainer = document.getElementById('wakeLockStatusContainer');
     const button = document.getElementById('toggleLockBtn');
+    const btnText = button.querySelector('.btn-text');
 
     if (isActive) {
-        statusElement.textContent = 'Screen Lock: Active';
-        statusElement.parentElement.classList.add('active');
-        button.textContent = 'Disable Screen Lock';
+        statusElement.textContent = 'LOCKED';
+        lockIcon.textContent = '●';
+        statusContainer.classList.add('active');
+        btnText.textContent = 'DISABLE SCREEN LOCK';
         button.classList.add('active');
     } else {
-        statusElement.textContent = 'Screen Lock: Off';
-        statusElement.parentElement.classList.remove('active');
-        button.textContent = 'Enable Screen Lock';
+        statusElement.textContent = 'UNLOCKED';
+        lockIcon.textContent = '○';
+        statusContainer.classList.remove('active');
+        btnText.textContent = 'ENABLE SCREEN LOCK';
         button.classList.remove('active');
     }
 }
@@ -98,15 +103,15 @@ function updatePriceDisplay(data) {
         const btcPrice = document.getElementById('btc-price');
         const btcChange = document.getElementById('btc-change');
 
-        btcPrice.textContent = `$${data.bitcoin.usd.toLocaleString('en-US', {
+        btcPrice.textContent = data.bitcoin.usd.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        })}`;
+        });
         btcPrice.classList.remove('loading');
 
         const btcChangeValue = data.bitcoin.usd_24h_change;
         btcChange.textContent = `${btcChangeValue >= 0 ? '+' : ''}${btcChangeValue.toFixed(2)}%`;
-        btcChange.className = 'crypto-change ' + (btcChangeValue >= 0 ? 'positive' : 'negative');
+        btcChange.className = 'metric-value ' + (btcChangeValue >= 0 ? 'positive' : 'negative');
     }
 
     // Update Ethereum
@@ -114,15 +119,15 @@ function updatePriceDisplay(data) {
         const ethPrice = document.getElementById('eth-price');
         const ethChange = document.getElementById('eth-change');
 
-        ethPrice.textContent = `$${data.ethereum.usd.toLocaleString('en-US', {
+        ethPrice.textContent = data.ethereum.usd.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        })}`;
+        });
         ethPrice.classList.remove('loading');
 
         const ethChangeValue = data.ethereum.usd_24h_change;
         ethChange.textContent = `${ethChangeValue >= 0 ? '+' : ''}${ethChangeValue.toFixed(2)}%`;
-        ethChange.className = 'crypto-change ' + (ethChangeValue >= 0 ? 'positive' : 'negative');
+        ethChange.className = 'metric-value ' + (ethChangeValue >= 0 ? 'positive' : 'negative');
     }
 }
 
