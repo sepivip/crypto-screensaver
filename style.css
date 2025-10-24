@@ -272,40 +272,35 @@ body.market-bearish .grid-background {
     gap: var(--space-sm);
     overflow: hidden; /* NO SCROLLING - FIT IN VIEWPORT */
 
-    /* Portrait Mobile: Market cap-based layout */
-    grid-template-columns: 1.5fr 1fr 1fr;
-    grid-template-rows: 1.2fr 1fr;
-    grid-template-areas:
-        "btc btc eth"
-        "sol doge bnb";
+    /* Portrait Mobile: Simple 2x3 grid, no template areas */
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
-/* Tile positioning by market cap */
+/* BTC spans 2 columns on first row */
 .crypto-tile[data-crypto="btc"] {
-    grid-area: btc;
+    grid-column: 1 / 3;
+    grid-row: 1;
 }
 
 .crypto-tile[data-crypto="eth"] {
-    grid-area: eth;
+    grid-column: 1;
+    grid-row: 2;
 }
 
 .crypto-tile[data-crypto="sol"] {
-    grid-area: sol;
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .crypto-tile[data-crypto="doge"] {
-    grid-area: doge;
+    grid-column: 1;
+    grid-row: 3;
 }
 
 .crypto-tile[data-crypto="bnb"] {
-    grid-area: bnb;
-}
-
-/* Fix for bottom row 3 tiles */
-.crypto-tile[data-crypto="sol"],
-.crypto-tile[data-crypto="doge"],
-.crypto-tile[data-crypto="bnb"] {
-    min-width: 0; /* Prevent overflow */
+    grid-column: 2;
+    grid-row: 3;
 }
 
 /* ========================================
@@ -586,7 +581,32 @@ body.market-bearish .grid-background {
     .data-grid {
         grid-template-columns: 1.6fr 1.2fr 1fr 0.8fr 1fr;
         grid-template-rows: 1fr;
-        grid-template-areas: "btc eth sol doge bnb";
+    }
+
+    /* Reset grid positions for landscape - all in one row */
+    .crypto-tile[data-crypto="btc"] {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="eth"] {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="sol"] {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="doge"] {
+        grid-column: 4;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="bnb"] {
+        grid-column: 5;
+        grid-row: 1;
     }
 
     .crypto-tile {
@@ -658,12 +678,35 @@ body.market-bearish .grid-background {
     }
 
     .data-grid {
-        grid-template-columns: 1.5fr 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         grid-template-rows: 1fr 1fr;
-        grid-template-areas:
-            "btc btc eth"
-            "sol doge bnb";
         gap: var(--space-lg);
+    }
+
+    /* BTC spans 2 columns on tablet portrait */
+    .crypto-tile[data-crypto="btc"] {
+        grid-column: 1 / 3;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="eth"] {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .crypto-tile[data-crypto="sol"] {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .crypto-tile[data-crypto="doge"] {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .crypto-tile[data-crypto="bnb"] {
+        grid-column: 3;
+        grid-row: 2;
     }
 
     .crypto-tile {
