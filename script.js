@@ -319,7 +319,14 @@ function updatePriceDisplay(data) {
                 performanceMetrics[tokenId] = performance;
             }
 
-            priceElement.textContent = price.toLocaleString('en-US', {
+            // Get or create price text wrapper to preserve crown emoji
+            let priceText = priceElement.querySelector('.price-text');
+            if (!priceText) {
+                priceText = document.createElement('span');
+                priceText.className = 'price-text';
+                priceElement.insertBefore(priceText, priceElement.firstChild);
+            }
+            priceText.textContent = price.toLocaleString('en-US', {
                 minimumFractionDigits: decimals,
                 maximumFractionDigits: decimals
             });
@@ -460,7 +467,18 @@ function updateCrownDisplayInitial(data) {
         const tile = document.querySelector(`.crypto-tile[data-crypto="${bestPerformer}"]`);
 
         if (priceElement) {
-            // Add crown emoji after price
+            // Ensure price text wrapper exists before adding crown
+            let priceText = priceElement.querySelector('.price-text');
+            if (!priceText && priceElement.childNodes.length > 0) {
+                // Wrap existing text content
+                priceText = document.createElement('span');
+                priceText.className = 'price-text';
+                priceText.textContent = priceElement.textContent;
+                priceElement.textContent = '';
+                priceElement.appendChild(priceText);
+            }
+
+            // Add crown emoji after price text
             const crownSpan = document.createElement('span');
             crownSpan.className = 'crown-emoji visible';
             crownSpan.textContent = ' 👑';

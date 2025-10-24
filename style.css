@@ -508,13 +508,19 @@ body.price-flash-red {
     font-size: 1.5rem;
 }
 
+/* Price text wrapper - preserves crown emoji during updates */
+.price-text {
+    display: inline;
+}
+
 /* Crown Emoji - Best Performer */
 .crown-emoji {
     display: inline-block;
     font-size: 0.85em;
     margin-left: 0.5rem;
-    vertical-align: middle;
+    vertical-align: baseline;
     line-height: 1;
+    transform: translateY(-0.1em);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
