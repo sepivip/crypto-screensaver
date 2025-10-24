@@ -78,10 +78,20 @@ document.addEventListener('visibilitychange', async () => {
 // Crypto price functionality
 const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price';
 
+// Token configuration
+const TOKENS = {
+    bitcoin: { id: 'btc', name: 'BITCOIN' },
+    ethereum: { id: 'eth', name: 'ETHEREUM' },
+    solana: { id: 'sol', name: 'SOLANA' },
+    dogecoin: { id: 'doge', name: 'DOGECOIN' },
+    binancecoin: { id: 'bnb', name: 'BINANCE COIN' }
+};
+
 async function fetchCryptoPrices() {
     try {
+        const tokenIds = Object.keys(TOKENS).join(',');
         const response = await fetch(
-            `${COINGECKO_API}?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true`
+            `${COINGECKO_API}?ids=${tokenIds}&vs_currencies=usd&include_24hr_change=true`
         );
 
         if (!response.ok) {
@@ -98,37 +108,32 @@ async function fetchCryptoPrices() {
 }
 
 function updatePriceDisplay(data) {
-    // Update Bitcoin
-    if (data.bitcoin) {
-        const btcPrice = document.getElementById('btc-price');
-        const btcChange = document.getElementById('btc-change');
+    // Update all tokens dynamically
+    Object.keys(TOKENS).forEach(tokenKey => {
+        const tokenData = data[tokenKey];
+        if (!tokenData) return;
 
-        btcPrice.textContent = data.bitcoin.usd.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        btcPrice.classList.remove('loading');
+        const tokenId = TOKENS[tokenKey].id;
+        const priceElement = document.getElementById(`${tokenId}-price`);
+        const changeElement = document.getElementById(`${tokenId}-change`);
 
-        const btcChangeValue = data.bitcoin.usd_24h_change;
-        btcChange.textContent = `${btcChangeValue >= 0 ? '+' : ''}${btcChangeValue.toFixed(2)}%`;
-        btcChange.className = 'metric-value ' + (btcChangeValue >= 0 ? 'positive' : 'negative');
-    }
+        if (priceElement && changeElement) {
+            // Format price based on value
+            const price = tokenData.usd;
+            const decimals = price < 1 ? 4 : price < 100 ? 3 : 2;
 
-    // Update Ethereum
-    if (data.ethereum) {
-        const ethPrice = document.getElementById('eth-price');
-        const ethChange = document.getElementById('eth-change');
+            priceElement.textContent = price.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+            priceElement.classList.remove('loading');
 
-        ethPrice.textContent = data.ethereum.usd.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        ethPrice.classList.remove('loading');
-
-        const ethChangeValue = data.ethereum.usd_24h_change;
-        ethChange.textContent = `${ethChangeValue >= 0 ? '+' : ''}${ethChangeValue.toFixed(2)}%`;
-        ethChange.className = 'metric-value ' + (ethChangeValue >= 0 ? 'positive' : 'negative');
-    }
+            // Update 24h change
+            const changeValue = tokenData.usd_24h_change;
+            changeElement.textContent = `${changeValue >= 0 ? '+' : ''}${changeValue.toFixed(2)}%`;
+            changeElement.className = 'metric-value ' + (changeValue >= 0 ? 'positive' : 'negative');
+        }
+    });
 }
 
 function updateLastUpdateTime() {
@@ -142,8 +147,13 @@ function updateLastUpdateTime() {
 }
 
 function showError() {
-    document.getElementById('btc-price').textContent = 'Error loading';
-    document.getElementById('eth-price').textContent = 'Error loading';
+    Object.keys(TOKENS).forEach(tokenKey => {
+        const tokenId = TOKENS[tokenKey].id;
+        const priceElement = document.getElementById(`${tokenId}-price`);
+        if (priceElement) {
+            priceElement.textContent = 'ERROR';
+        }
+    });
 }
 
 // Initial load
@@ -153,5 +163,10 @@ fetchCryptoPrices();
 setInterval(fetchCryptoPrices, 30000);
 
 // Add loading animation initially
-document.getElementById('btc-price').classList.add('loading');
-document.getElementById('eth-price').classList.add('loading');
+Object.keys(TOKENS).forEach(tokenKey => {
+    const tokenId = TOKENS[tokenKey].id;
+    const priceElement = document.getElementById(`${tokenId}-price`);
+    if (priceElement) {
+        priceElement.classList.add('loading');
+    }
+});

@@ -18,90 +18,96 @@
 
         <!-- Header -->
         <header class="terminal-header">
-            <div class="header-left">
-                <div class="terminal-indicator">
-                    <span class="pulse-dot"></span>
-                    <span class="terminal-label">LIVE</span>
-                </div>
+            <div class="terminal-indicator">
+                <span class="pulse-dot"></span>
+                <span class="terminal-label">LIVE</span>
             </div>
-            <div class="header-center">
-                <h1 class="terminal-title">CRYPTO TERMINAL</h1>
-            </div>
-            <div class="header-right">
-                <div class="wake-lock-status" id="wakeLockStatusContainer">
-                    <span class="status-icon" id="lockIcon">○</span>
-                    <span class="status-text" id="wakeLockStatus">UNLOCKED</span>
-                </div>
+            <h1 class="terminal-title">CRYPTO</h1>
+            <div class="wake-lock-status" id="wakeLockStatusContainer">
+                <span class="status-icon" id="lockIcon">○</span>
+                <span class="status-text" id="wakeLockStatus">UNLOCKED</span>
             </div>
         </header>
 
         <!-- Data Grid -->
         <main class="data-grid">
 
-            <!-- Bitcoin Card -->
-            <article class="crypto-card" id="btc-card">
-                <div class="card-header">
-                    <div class="crypto-label">
-                        <span class="crypto-symbol">BTC</span>
-                        <span class="crypto-name">BITCOIN</span>
-                    </div>
+            <!-- Bitcoin Tile -->
+            <article class="crypto-tile" data-crypto="btc">
+                <div class="tile-header">
+                    <span class="crypto-symbol">BTC</span>
                     <div class="data-bar"></div>
                 </div>
-
-                <div class="card-body">
+                <div class="tile-body">
                     <div class="price-display">
-                        <span class="price-value" id="btc-price">---.---</span>
-                        <span class="price-currency">USD</span>
+                        <span class="price-value" id="btc-price">---</span>
                     </div>
-
-                    <div class="metrics-row">
-                        <div class="metric">
-                            <span class="metric-label">24H CHANGE</span>
-                            <span class="metric-value" id="btc-change">--.--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-footer">
-                    <div class="signal-bars">
-                        <span class="bar"></span>
-                        <span class="bar"></span>
-                        <span class="bar"></span>
-                        <span class="bar"></span>
+                    <div class="change-display">
+                        <span class="metric-value" id="btc-change">--.--</span>
                     </div>
                 </div>
             </article>
 
-            <!-- Ethereum Card -->
-            <article class="crypto-card" id="eth-card">
-                <div class="card-header">
-                    <div class="crypto-label">
-                        <span class="crypto-symbol">ETH</span>
-                        <span class="crypto-name">ETHEREUM</span>
-                    </div>
+            <!-- Ethereum Tile -->
+            <article class="crypto-tile" data-crypto="eth">
+                <div class="tile-header">
+                    <span class="crypto-symbol">ETH</span>
                     <div class="data-bar"></div>
                 </div>
-
-                <div class="card-body">
+                <div class="tile-body">
                     <div class="price-display">
-                        <span class="price-value" id="eth-price">---.---</span>
-                        <span class="price-currency">USD</span>
+                        <span class="price-value" id="eth-price">---</span>
                     </div>
-
-                    <div class="metrics-row">
-                        <div class="metric">
-                            <span class="metric-label">24H CHANGE</span>
-                            <span class="metric-value" id="eth-change">--.--</span>
-                        </div>
+                    <div class="change-display">
+                        <span class="metric-value" id="eth-change">--.--</span>
                     </div>
                 </div>
+            </article>
 
-                <div class="card-footer">
-                    <div class="signal-bars">
-                        <span class="bar"></span>
-                        <span class="bar"></span>
-                        <span class="bar"></span>
-                        <span class="bar"></span>
+            <!-- Solana Tile -->
+            <article class="crypto-tile" data-crypto="sol">
+                <div class="tile-header">
+                    <span class="crypto-symbol">SOL</span>
+                    <div class="data-bar"></div>
+                </div>
+                <div class="tile-body">
+                    <div class="price-display">
+                        <span class="price-value" id="sol-price">---</span>
+                    </div>
+                    <div class="change-display">
+                        <span class="metric-value" id="sol-change">--.--</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Dogecoin Tile -->
+            <article class="crypto-tile" data-crypto="doge">
+                <div class="tile-header">
+                    <span class="crypto-symbol">DOGE</span>
+                    <div class="data-bar"></div>
+                </div>
+                <div class="tile-body">
+                    <div class="price-display">
+                        <span class="price-value" id="doge-price">---</span>
+                    </div>
+                    <div class="change-display">
+                        <span class="metric-value" id="doge-change">--.--</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Binance Coin Tile -->
+            <article class="crypto-tile" data-crypto="bnb">
+                <div class="tile-header">
+                    <span class="crypto-symbol">BNB</span>
+                    <div class="data-bar"></div>
+                </div>
+                <div class="tile-body">
+                    <div class="price-display">
+                        <span class="price-value" id="bnb-price">---</span>
+                    </div>
+                    <div class="change-display">
+                        <span class="metric-value" id="bnb-change">--.--</span>
                     </div>
                 </div>
             </article>
@@ -110,20 +116,11 @@
 
         <!-- Footer Controls -->
         <footer class="terminal-footer">
-            <div class="footer-info">
-                <span class="info-label">LAST UPDATE</span>
-                <span class="info-value" id="lastUpdate">--:--:--</span>
-            </div>
-
+            <span class="footer-time" id="lastUpdate">--:--:--</span>
             <button class="control-btn" id="toggleLockBtn">
                 <span class="btn-icon">⊙</span>
                 <span class="btn-text">ENABLE SCREEN LOCK</span>
             </button>
-
-            <div class="footer-info">
-                <span class="info-label">REFRESH</span>
-                <span class="info-value">30s</span>
-            </div>
         </footer>
 
     </div>
