@@ -119,6 +119,8 @@ async function fetchCryptoPrices() {
 }
 
 function updatePriceDisplay(data) {
+    let btcChangeValue = null;
+
     // Update all tokens dynamically
     Object.keys(TOKENS).forEach(tokenKey => {
         const tokenData = data[tokenKey];
@@ -143,8 +145,40 @@ function updatePriceDisplay(data) {
             const changeValue = tokenData.usd_24h_change;
             changeElement.textContent = `${changeValue >= 0 ? '+' : ''}${changeValue.toFixed(2)}%`;
             changeElement.className = 'metric-value ' + (changeValue >= 0 ? 'positive' : 'negative');
+
+            // Track BTC change for background pulse
+            if (tokenId === 'btc') {
+                btcChangeValue = changeValue;
+            }
         }
     });
+
+    // Apply ambient background pulse based on BTC performance
+    applyMarketMoodPulse(btcChangeValue);
+}
+
+// Apply subtle background pulse based on BTC market direction
+function applyMarketMoodPulse(btcChange) {
+    const body = document.body;
+
+    // Remove any existing mood classes
+    body.classList.remove('market-bullish', 'market-bearish', 'market-neutral');
+
+    if (btcChange === null || btcChange === undefined) {
+        return; // No data yet
+    }
+
+    // Determine market mood
+    if (btcChange > 0) {
+        body.classList.add('market-bullish'); // Green pulse
+        console.log('📈 Market mood: BULLISH (BTC +' + btcChange.toFixed(2) + '%)');
+    } else if (btcChange < 0) {
+        body.classList.add('market-bearish'); // Red pulse
+        console.log('📉 Market mood: BEARISH (BTC ' + btcChange.toFixed(2) + '%)');
+    } else {
+        body.classList.add('market-neutral'); // Neutral (rare)
+        console.log('➡️ Market mood: NEUTRAL (BTC 0%)');
+    }
 }
 
 function updateLastUpdateTime() {

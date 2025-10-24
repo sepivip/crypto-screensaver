@@ -77,6 +77,44 @@ body {
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 3s ease;
+}
+
+/* ========================================
+   Market Mood Ambient Pulse - Based on BTC
+   ======================================== */
+
+/* Bullish (BTC Green) - Subtle green glow pulse */
+body.market-bullish {
+    animation: bullishPulse 8s ease-in-out infinite;
+}
+
+@keyframes bullishPulse {
+    0%, 100% {
+        background-color: var(--bg-void);
+    }
+    50% {
+        background-color: rgba(35, 134, 54, 0.03); /* Very subtle green */
+    }
+}
+
+/* Bearish (BTC Red) - Subtle red glow pulse */
+body.market-bearish {
+    animation: bearishPulse 8s ease-in-out infinite;
+}
+
+@keyframes bearishPulse {
+    0%, 100% {
+        background-color: var(--bg-void);
+    }
+    50% {
+        background-color: rgba(218, 54, 51, 0.03); /* Very subtle red */
+    }
+}
+
+/* Neutral (BTC Flat) - No pulse, just base color */
+body.market-neutral {
+    background-color: var(--bg-void);
 }
 
 /* ========================================
@@ -97,11 +135,21 @@ body {
     background-position: -1px -1px;
     opacity: 0.3;
     animation: gridScroll 20s linear infinite;
+    transition: opacity 3s ease;
 }
 
 @keyframes gridScroll {
     0% { background-position: -1px -1px; }
     100% { background-position: 49px 49px; }
+}
+
+/* Grid responds to market mood */
+body.market-bullish .grid-background {
+    opacity: 0.4; /* Slightly more visible when bullish */
+}
+
+body.market-bearish .grid-background {
+    opacity: 0.25; /* Slightly dimmer when bearish */
 }
 
 /* ========================================
@@ -436,12 +484,27 @@ body {
     flex-shrink: 0; /* Don't shrink footer */
 }
 
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+}
+
 .footer-time {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
+}
+
+.footer-version {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: var(--text-quaternary);
+    letter-spacing: 0.05em;
 }
 
 /* Control Button */
