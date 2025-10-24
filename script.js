@@ -234,7 +234,7 @@ function triggerPriceFlash(currentPrice) {
     previousBtcPrice = currentPrice;
 }
 
-// Quick lightning flash effect
+// Phone notification style flash effect
 function flashBackground(color) {
     const body = document.body;
 
@@ -251,10 +251,10 @@ function flashBackground(color) {
         body.classList.add('price-flash-red');
     }
 
-    // Remove after animation (1 second)
+    // Remove after animation (600ms)
     setTimeout(() => {
         body.classList.remove('price-flash-green', 'price-flash-red');
-    }, 1000);
+    }, 600);
 }
 
 function updateLastUpdateTime() {
